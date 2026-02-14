@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma migrate deploy && next build",
+    "build": "next build",
     "start": "next start",
     "seed": "node prisma/seed.js"
   },
@@ -24,4 +24,3 @@
     "typescript": "^5.5.4"
   }
 }
-
