@@ -1,3 +1,30 @@
+"use client";
+
+import { useSession, signOut } from "next-auth/react";
+
 export default function Page() {
-  return <h1>Prosthesis App Running 🚀</h1>;
+  const { data, status } = useSession();
+
+  if (status === "loading") return <p>Loading...</p>;
+  if (!data?.user) {
+    window.location.href = "/login";
+    return null;
+  }
+
+  return (
+    <div>
+      <h2>Logged in ✅</h2>
+      <p>
+        Email: <b>{data.user.email}</b>
+      </p>
+      <p>
+        Role: <b>{(data.user as any).role}</b>
+      </p>
+
+      <button onClick={() => signOut({ callbackUrl: "/login" })}>Logout</button>
+
+      <hr />
+      <p>Next: we’ll add Requests + Quotes + Messages UI here.</p>
+    </div>
+  );
 }
