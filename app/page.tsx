@@ -14,17 +14,15 @@ export default function Page() {
   return (
     <div>
       <h2>Logged in ✅</h2>
-      <p>
-        Email: <b>{data.user.email}</b>
-      </p>
-      <p>
-        Role: <b>{(data.user as any).role}</b>
-      </p>
+      <p>Email: <b>{data.user.email}</b></p>
+      <p>Role: <b>{(data.user as any).role}</b></p>
 
-      <button onClick={() => signOut({ callbackUrl: "/login" })}>Logout</button>
+      <button onClick={() => signOut({ callbackUrl: "/login" })}>
+        Logout
+      </button>
 
       <hr />
-      <p>Next: we’ll add Requests + Quotes + Messages UI here.</p>
+      <p>Next step: Prosthesis Requests Dashboard will appear here.</p>
     </div>
   );
 }
