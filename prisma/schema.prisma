@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PATIENT
+  SUPPLIER
+  DOCTOR
+}
+
+enum RequestStatus {
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
+enum QuoteStatus {
+  SUBMITTED
+  ACCEPTED
+  REJECTED
+}
+
+enum OrderStatus {
+  PAYMENT_PENDING
+  PAID
+  IN_PRODUCTION
+  SHIPPED
+  DELIVERED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  role         Role
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  requests  ProsthesisRequest[] @relation("PatientRequests")
+  quotes    Quote[]            @relation("SupplierQuotes")
+}
+
+model ProsthesisRequest {
+  id            String        @id @default(cuid())
+  patientId     String
+  patient       User          @relation("PatientRequests", fields: [patientId], references: [id])
+
+  title         String
+  prosthesisType String
+  notes         String?
+  measurements  Json
+  status        RequestStatus @default(OPEN)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  quotes        Quote[]
+  order         Order?
+}
+
+model Quote {
+  id            String      @id @default(cuid())
+  requestId     String
+  request       ProsthesisRequest @relation(fields: [requestId], references: [id])
+
+  supplierId    String
+  supplier      User        @relation("SupplierQuotes", fields: [supplierId], references: [id])
+
+  priceCents    Int
+  currency      String      @default("usd")
+  leadTimeDays  Int
+  notes         String?
+  status        QuoteStatus @default(SUBMITTED)
+
+  createdAt     DateTime @default(now())
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  requestId    String      @unique
+  request      ProsthesisRequest @relation(fields: [requestId], references: [id])
+
+  supplierId   String
+  supplier     User        @relation(fields: [supplierId], references: [id])
+
+  quoteId      String
+  quote        Quote       @relation(fields: [quoteId], references: [id])
+
+  status       OrderStatus @default(PAYMENT_PENDING)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
